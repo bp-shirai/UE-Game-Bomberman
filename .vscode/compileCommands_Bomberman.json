@@ -1,0 +1,26 @@
+[
+	{
+		"file": "D:\\UnrealProjects\\Bomberman\\Source\\Bomberman\\Bomberman.Build.cs",
+		"arguments": [
+			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.38.33130\\bin\\Hostx64\\x64\\cl.exe",
+			"@D:\\UnrealProjects\\Bomberman\\.vscode\\compileCommands_Bomberman\\Bomberman.1.rsp"
+		],
+		"directory": "C:\\Program Files\\Epic Games\\UE_5.6\\Engine\\Source"
+	},
+	{
+		"file": "D:\\UnrealProjects\\Bomberman\\Source\\Bomberman\\Bomberman.cpp",
+		"arguments": [
+			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.38.33130\\bin\\Hostx64\\x64\\cl.exe",
+			"@D:\\UnrealProjects\\Bomberman\\.vscode\\compileCommands_Bomberman\\Bomberman.1.rsp"
+		],
+		"directory": "C:\\Program Files\\Epic Games\\UE_5.6\\Engine\\Source"
+	},
+	{
+		"file": "D:\\UnrealProjects\\Bomberman\\Source\\Bomberman\\Bomberman.h",
+		"arguments": [
+			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.38.33130\\bin\\Hostx64\\x64\\cl.exe",
+			"@D:\\UnrealProjects\\Bomberman\\.vscode\\compileCommands_Bomberman\\Bomberman.1.rsp"
+		],
+		"directory": "C:\\Program Files\\Epic Games\\UE_5.6\\Engine\\Source"
+	}
+]
