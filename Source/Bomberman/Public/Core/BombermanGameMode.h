@@ -13,5 +13,24 @@ UCLASS()
 class BOMBERMAN_API ABombermanGameMode : public AGameModeBase
 {
 	GENERATED_BODY()
+
 	
+	public:
+    ABombermanGameMode();
+
+    UFUNCTION(BlueprintCallable)
+    void StartGame();
+    
+    UFUNCTION(BlueprintCallable)
+    void EndGame();
+    
+    UFUNCTION(BlueprintCallable)
+    void RespawnPlayer(APlayerController* Player);
+
+protected:
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    int32 MaxPlayers = 4;
+    
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    float GameDuration = 180.0f;
 };

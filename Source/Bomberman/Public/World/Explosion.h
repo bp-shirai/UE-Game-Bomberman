@@ -6,6 +6,16 @@
 #include "GameFramework/Actor.h"
 #include "Explosion.generated.h"
 
+
+UENUM(BlueprintType)
+enum class EExplosionType : uint8
+{
+    Center,     // 爆弾中心
+    Middle,     // 爆発の途中
+    End         // 爆発の先端
+};
+
+
 UCLASS()
 class BOMBERMAN_API AExplosion : public AActor
 {

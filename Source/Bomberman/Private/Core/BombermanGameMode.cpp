@@ -3,3 +3,19 @@
 
 #include "Core/BombermanGameMode.h"
 
+
+ABombermanGameMode::ABombermanGameMode()
+{
+}
+
+void ABombermanGameMode::StartGame()
+{
+}
+
+void ABombermanGameMode::EndGame()
+{
+}
+
+void ABombermanGameMode::RespawnPlayer(APlayerController* Player)
+{
+}

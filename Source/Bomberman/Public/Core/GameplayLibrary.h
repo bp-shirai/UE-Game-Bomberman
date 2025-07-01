@@ -14,4 +14,8 @@ class BOMBERMAN_API UGameplayLibrary : public UBlueprintFunctionLibrary
 {
 	GENERATED_BODY()
 	
+public:
+
+	UFUNCTION(BlueprintPure, Category=Gameplay)
+	static float GetActorHalfHeightFromRootPrimitive(const AActor* TargetActor);
 };

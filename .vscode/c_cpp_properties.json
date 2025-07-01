@@ -7,7 +7,7 @@
             "cppStandard": "c++20",
             "intelliSenseMode": "msvc-x64",
             "compileCommands": [
-                "D:\\UnrealProjects\\Bomberman\\.vscode\\compileCommands_Bomberman.json"
+                "D:\\UnrealProjects\\Game_Bomberman\\.vscode\\compileCommands_Bomberman.json"
             ]
         },
         {
@@ -17,7 +17,7 @@
             "cppStandard": "c++20",
             "intelliSenseMode": "msvc-x64",
             "compileCommands": [
-                "D:\\UnrealProjects\\Bomberman\\.vscode\\compileCommands_Default.json"
+                "D:\\UnrealProjects\\Game_Bomberman\\.vscode\\compileCommands_Default.json"
             ]
         }
     ],

@@ -6,21 +6,45 @@
 #include "GameFramework/Actor.h"
 #include "FollowCamera.generated.h"
 
+
+class USpringArmComponent;
+class UCameraComponent;
+
 UCLASS()
 class BOMBERMAN_API AFollowCamera : public AActor
 {
 	GENERATED_BODY()
-	
-public:	
-	// Sets default values for this actor's properties
+
+public:
 	AFollowCamera();
 
 protected:
-	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-
-public:	
-	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+public:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
+	USpringArmComponent* SpringArm;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
+	UCameraComponent* Camera;
+
+	// プレイヤーキャラクターへの参照
+	// UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Camera)
+	// AActor* PlayerCharacter;
+
+	UPROPERTY(Transient)
+	TWeakObjectPtr<APlayerController> PlayerControllerRef;
+
+	// カメラのオフセット（プレイヤーからの相対位置）
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Camera)
+	FVector CameraOffset;
+
+	// カメラの追跡速度
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Camera)
+	float InterpSpeed;
+
+	// カメラの回転角度（俯瞰視点用）
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Camera)
+	FRotator CameraRotation;
 };
