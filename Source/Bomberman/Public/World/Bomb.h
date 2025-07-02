@@ -108,7 +108,7 @@ protected:
         
     // Sine curve animation speed
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Bomb|Animation")
-    float ScaleAnimationSpeed = 2.0f; // Animation speed (Hz)
+    float ScaleAnimationSpeed = 3.0f; // Animation speed (Hz)
 
     // Scale animation amplitude (increase and decrease from the original scale)
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Bomb|Animation")

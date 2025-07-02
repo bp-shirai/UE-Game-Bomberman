@@ -149,9 +149,17 @@ void ABombermanCharacter::PlaceBomb()
 
 	auto BombCDO = BombClass ? BombClass->GetDefaultObject<ABomb>() : nullptr;
 	auto OffsetZ = UGameplayLibrary::GetActorHalfHeightFromRootPrimitive(BombCDO);
-	GridPosition.Z += OffsetZ;
+	// GridPosition.Z += OffsetZ;
+	FHitResult GroundHit;
+	const static FName TraceTag("GroundHit");
+	const FCollisionQueryParams Params(TraceTag, false, this);
+	GetWorld()->LineTraceSingleByChannel(GroundHit, GridPosition, GridPosition + (FVector::UpVector * -100.f), ECC_WorldStatic, Params);
 
-	ABomb* NewBomb = GetWorld()->SpawnActor<ABomb>(BombClass, GridPosition, FRotator::ZeroRotator, SpawnParams);
+    GroundHit.ImpactPoint.Z += OffsetZ;
+	const FVector SpawnPosition = GroundHit.ImpactPoint;
+
+
+	ABomb* NewBomb = GetWorld()->SpawnActor<ABomb>(BombClass, SpawnPosition, FRotator::ZeroRotator, SpawnParams);
 
 	if (NewBomb)
 	{

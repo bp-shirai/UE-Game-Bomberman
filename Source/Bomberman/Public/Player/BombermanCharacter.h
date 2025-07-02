@@ -31,7 +31,7 @@ public:
 	void KickBomb(class ABomb* Bomb);
 
 	UFUNCTION(BlueprintCallable, Category = "Bomberman|Actions")
-	void PickupPowerup(class APowerup* Powerup);
+	void PickupPowerup(APowerup* Powerup);
 
 	// Get Status
 	UFUNCTION(BlueprintPure, Category = "Bomberman|Stats")
@@ -178,6 +178,8 @@ private:
 	void EndInvincibility();
 
 	// ===== Bomb Management =====
+    UFUNCTION()
 	void OnBombExploded(ABomb* ExplodedBomb);
+    
 	void CleanupBombReferences();
 };

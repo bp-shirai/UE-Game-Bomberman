@@ -8,7 +8,6 @@
 #include "Player/BombermanCharacter.h"
 #include "World/Explosion.h"
 
-
 ABomb::ABomb()
 {
 	PrimaryActorTick.bCanEverTick = true;
@@ -37,13 +36,14 @@ ABomb::ABomb()
 	BombMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	ExplosionTimer = DefaultExplosionTime;
-
-	InitialScale = BombMesh->GetRelativeScale3D();
 }
 
 void ABomb::BeginPlay()
 {
 	Super::BeginPlay();
+
+	InitialScale = BombMesh->GetRelativeScale3D();
+	UE_LOG(LogTemp, Log, TEXT("Bomb InitialScale: %s"), *InitialScale.ToString());
 
 	// Timer starts
 	StartTimer(DefaultExplosionTime);
@@ -74,14 +74,49 @@ void ABomb::Tick(float DeltaTime)
 
 void ABomb::StartTimer(float ExplosionTime)
 {
+	if (bIsExploding) return;
+
+	ExplosionTimer = ExplosionTime;
+
+	GetWorldTimerManager().SetTimer(ExplosionTimerHandle, this, &ThisClass::Explode, ExplosionTime, false);
+
+	OnTimerStarted(ExplosionTime);
+
+	UE_LOG(LogTemp, Log, TEXT("Bomb timer started: %f seconds"), ExplosionTime);
 }
 
 void ABomb::Explode()
 {
+	if (bIsExploding) return;
+
+	bIsExploding = true;
+
+	UE_LOG(LogTemp, Warning, TEXT("Bomb exploding at: %s with power: %d"), *GetActorLocation().ToString(), ExplosionRange);
+
+	// Blueprint event call
+	OnBombExploding();
+
+	// Spawn Explosion
+	CreateExplosion();
+
+	// Notify the owner
+	if (Owner)
+	{
+		OnBombExploded.Broadcast(this);
+	}
+
+	// Clear timer
+	if (ExplosionTimerHandle.IsValid()) GetWorldTimerManager().ClearTimer(ExplosionTimerHandle);
+	if (OwnerIgnoreTimerHandle.IsValid()) GetWorldTimerManager().ClearTimer(OwnerIgnoreTimerHandle);
+
+	// Remove bombs
+	Destroy();
 }
 
 void ABomb::ForceExplode()
 {
+	GetWorldTimerManager().ClearTimer(ExplosionTimerHandle);
+	Explode();
 }
 
 void ABomb::CreateExplosion()
@@ -123,5 +158,15 @@ void ABomb::EnableOwnerCollision()
 
 void ABomb::UpdateTimerEffects(float DeltaTIme)
 {
+	const float Time = GetWorld()->GetTimeSeconds();
+	// Sine cure value (between -1.0 and 1.0)
+	const float SineValue = FMath::Sin(Time * ScaleAnimationSpeed);
+	// Calculate scale using this sine value (interpolation between MinScale and MaxScale)
+	const float NormalizedSine = (SineValue + 1.0f) * 0.5f; // -1.0~1.0 normalize to 0.0~1.0
 
+	// Calculated scale value
+	const float CurrentScale = FMath::Lerp(MinAnimScale, MaxAnimScale, NormalizedSine);
+
+	const FVector NewScale = InitialScale * CurrentScale;
+	BombMesh->SetWorldScale3D(NewScale);
 }

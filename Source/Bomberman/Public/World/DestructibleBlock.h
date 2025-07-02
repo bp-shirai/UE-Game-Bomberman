@@ -4,13 +4,12 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "Powerup.generated.h"
+#include "DestructibleBlock.generated.h"
 
 UCLASS()
-class BOMBERMAN_API APowerup : public AActor
+class BOMBERMAN_API ADestructibleBlock : public AActor
 {
 	GENERATED_BODY()
 	
-
 
 };
