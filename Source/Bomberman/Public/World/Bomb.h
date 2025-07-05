@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+
+#include "World/Explosion.h"
 #include "Bomb.generated.h"
 
 class ABombermanCharacter;
@@ -28,16 +30,10 @@ public:
 	void ForceExplode();
 
 	UFUNCTION(BlueprintCallable, Category = "Bomb")
-	void SetBombPower(int32 NewPower)
-	{
-		ExplosionRange = NewPower;
-	}
+	void SetBombPower(int32 NewPower) { ExplosionRange = NewPower; }
 
 	UFUNCTION(BlueprintPure, Category = "Bomb")
-	int32 GetBombPower() const
-	{
-		return ExplosionRange;
-	}
+	int32 GetBombPower() const { return ExplosionRange; }
 
 	// Kick function
 	UFUNCTION(BlueprintCallable, Category = "Bomb|Kick")
@@ -50,14 +46,13 @@ public:
 	void StopKick();
 
 	// Owner management
-//	UFUNCTION(BlueprintCallable, Category = "Bomb")
-//	void SetBombOwner(ABombermanCharacter* NewOwner) {};
+	UFUNCTION(BlueprintCallable, Category = "Bomb")
+	void SetBombOwner(ABombermanCharacter* NewOwner) { BombOwner = NewOwner; }
 
-//	UFUNCTION(BlueprintPure, Category = "Bomb")
-//	ABombermanCharacter* GetBombOwner() const
-//	{
-//		return BombOwner;
-//	}
+	UFUNCTION(BlueprintPure, Category = "Bomb")
+	ABombermanCharacter* GetBombOwner() const { return BombOwner; }
+
+	void DisableOwnerCollision();
 
 	// Delegate
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnBombExploded, ABomb*, ExplodedBomb);
@@ -101,28 +96,28 @@ protected:
 	bool bCanBeKicked = true;
 
 	// ===== Class references =====
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Bomb|Classes")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Bomb|Classes")
 	TSubclassOf<class AExplosion> ExplosionClass;
 
-    // ===== Animation ===========
-        
-    // Sine curve animation speed
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Bomb|Animation")
-    float ScaleAnimationSpeed = 3.0f; // Animation speed (Hz)
+	// ===== Animation ===========
 
-    // Scale animation amplitude (increase and decrease from the original scale)
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Bomb|Animation")
-    float ScaleAmplitude = 0.2f; // Example: 0.2 is ±20% of the original scale
+	// Sine curve animation speed
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Bomb|Animation")
+	float ScaleAnimationSpeed = 3.0f; // Animation speed (Hz)
 
-    // Minimum scale value (e.g. 0.8)
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Bomb|Animation")
-    float MinAnimScale = 0.8f;
+	// Scale animation amplitude (increase and decrease from the original scale)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Bomb|Animation")
+	float ScaleAmplitude = 0.2f; // Example: 0.2 is ±20% of the original scale
 
-    // Maximum scale value (e.g. 1.2)
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Bomb|Animation")
-    float MaxAnimScale = 1.2f;
+	// Minimum scale value (e.g. 0.8)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Bomb|Animation")
+	float MinAnimScale = 0.8f;
 
-    FVector InitialScale; // Save initial scale
+	// Maximum scale value (e.g. 1.2)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Bomb|Animation")
+	float MaxAnimScale = 1.2f;
+
+	FVector InitialScale; // Save initial scale
 
 	// ===== Blueprint event =====
 	UFUNCTION(BlueprintImplementableEvent, Category = "Bomb|Events")
@@ -145,8 +140,8 @@ protected:
 
 private:
 	// ===== Internal status =====
-	//UPROPERTY()
-	//ABombermanCharacter* BombOwner;
+	UPROPERTY()
+	ABombermanCharacter* BombOwner;
 
 	FTimerHandle ExplosionTimerHandle;
 	FTimerHandle OwnerIgnoreTimerHandle;
@@ -157,7 +152,7 @@ private:
 
 	// キック関連
 	bool bIsBeingKicked = false;
-	// FVector KickDirection;
+	FVector _KickDirection;
 	float CurrentKickSpeed = 0.0f;
 
 	// ===== 内部関数 =====
@@ -167,12 +162,13 @@ private:
 	void OnKickCollision();
 	void EnableOwnerCollision();
 	void UpdateTimerEffects(float DeltaTIme);
+	void UpdateOwnerCanPass();
+
+	void SpawnExplosion(FVector Position, EExplosionType Type);
 
 	// グリッド関連
-	FVector GetGridPosition(FVector WorldPosition) const
-	{
-		return FVector();
-	}
+	FVector GetGridPosition(FVector WorldPosition) const;
+
 	bool IsValidGridPosition(FVector Position) const
 	{
 		return false;

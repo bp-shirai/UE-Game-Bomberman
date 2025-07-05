@@ -7,30 +7,36 @@
 #include "BombermanGameMode.generated.h"
 
 /**
- * 
+ *
  */
 UCLASS()
 class BOMBERMAN_API ABombermanGameMode : public AGameModeBase
 {
 	GENERATED_BODY()
 
-	
-	public:
-    ABombermanGameMode();
+public:
+	ABombermanGameMode();
 
-    UFUNCTION(BlueprintCallable)
-    void StartGame();
-    
-    UFUNCTION(BlueprintCallable)
-    void EndGame();
-    
-    UFUNCTION(BlueprintCallable)
-    void RespawnPlayer(APlayerController* Player);
+	// Called when a player logs in
+	virtual void PostLogin(APlayerController* NewPlayer) override;
+
+	UFUNCTION(BlueprintCallable)
+	void StartGame();
+
+	UFUNCTION(BlueprintCallable)
+	void EndGame();
+
+	UFUNCTION(BlueprintCallable)
+	void RespawnPlayer(APlayerController* Player);
 
 protected:
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    int32 MaxPlayers = 4;
-    
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    float GameDuration = 180.0f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 MaxPlayers = 4;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float GameDuration = 180.0f;
+
+	// Track the player id you assign next
+	UPROPERTY()
+	int32 NextPlayerID;
 };

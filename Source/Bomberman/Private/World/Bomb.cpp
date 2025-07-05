@@ -7,6 +7,8 @@
 
 #include "Player/BombermanCharacter.h"
 #include "World/Explosion.h"
+#include "World/DestructibleBlock.h"
+#include "Core/BombermanTypes.h"
 
 ABomb::ABomb()
 {
@@ -19,7 +21,8 @@ ABomb::ABomb()
 	CollisionBox->SetCollisionObjectType(ECC_WorldDynamic);
 	CollisionBox->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	CollisionBox->SetCollisionResponseToAllChannels(ECR_Block);
-	CollisionBox->SetCollisionResponseToChannel(ECC_Pawn, ECR_Ignore); // Can be passed through early
+	// CollisionBox->SetCollisionResponseToChannel(ECC_Pawn, ECR_Ignore); // Can be passed through early
+	// CollisionBox->SetCollisionResponseToChannel(ECC_BombOwner, ECR_Ignore);
 
 	// Trigger sphere （for explosive chaining)
 	TriggerSphere = CreateDefaultSubobject<USphereComponent>(TEXT("TriggerSphere"));
@@ -49,17 +52,23 @@ void ABomb::BeginPlay()
 	StartTimer(DefaultExplosionTime);
 
 	// Owner ignore timer
-	GetWorldTimerManager().SetTimer(OwnerIgnoreTimerHandle, this, &ThisClass::EnableOwnerCollision, 0.5f, false);
+	// GetWorldTimerManager().SetTimer(OwnerIgnoreTimerHandle, this, &ThisClass::EnableOwnerCollision, 0.5f, false);
+	bOwnerCanPass = true;
 
 	// Blueprint event call
 	OnBombPlaced();
 
-	UE_LOG(LogTemp, Log, TEXT("Bomb placed at: %s"), *GetActorLocation().ToString());
+	UE_LOG(LogTemp, Log, TEXT("Bomb placed at: %s : Owner : %s"), *GetActorLocation().ToString(), *GetOwner()->GetName());
 }
 
 void ABomb::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	if (bOwnerCanPass)
+	{
+		UpdateOwnerCanPass();
+	}
 
 	if (bIsBeingKicked)
 	{
@@ -121,39 +130,179 @@ void ABomb::ForceExplode()
 
 void ABomb::CreateExplosion()
 {
+	if (!ExplosionClass)
+	{
+		UE_LOG(LogTemp, Error, TEXT("ExplosionClass not set!"));
+		return;
+	}
+
+	FVector BombLocation = GetActorLocation();
+
+	// Explosion in the center
+	SpawnExplosion(BombLocation, EExplosionType::Center);
+
+	// Explosion in four directions
+	TArray<FVector> Directions = {FVector(1, 0, 0),
+								  FVector(-1, 0, 0),
+								  FVector(0, 1, 0),
+								  FVector(0, -1, 0)};
+	for (const FVector& Direction : Directions)
+	{
+		CheckExplosionDirection(Direction, ExplosionRange);
+	}
 }
 
 void ABomb::CheckExplosionDirection(FVector Direction, int32 Range)
 {
+	const FVector CurrentPosition = GetActorLocation();
+
+	FCollisionQueryParams QueryParams;
+	QueryParams.AddIgnoredActor(this);
+	if (Owner)
+	{
+		QueryParams.AddIgnoredActor(Owner);
+	}
+
+	for (int32 i = 1; i <= Range; i++)
+	{
+		const FVector ExplosionPosition = CurrentPosition + (Direction * GridSize * i);
+		const FVector StartPosition		= CurrentPosition + (Direction * GridSize * (i - 0.5f));
+		// Obstacle check
+		FHitResult HitResult;
+		bool bHit = GetWorld()->LineTraceSingleByChannel(HitResult, StartPosition, ExplosionPosition, ECC_WorldStatic, QueryParams);
+
+		if (bHit)
+		{
+			// Destructible block handling
+			if (ADestructibleBlock* Block = Cast<ADestructibleBlock>(HitResult.GetActor()))
+			{
+				// Explosions at block location
+				SpawnExplosion(HitResult.Location, i == Range ? EExplosionType::End : EExplosionType::Middle);
+				Block->DestroyBlock();
+				break;
+			}
+			else
+			{
+				// Indestructible obstacles
+				break;
+			}
+		}
+		else
+		{
+			// Determine the explosion type
+			EExplosionType ExplosionType = (i == Range) ? EExplosionType::End : EExplosionType::Middle;
+			SpawnExplosion(ExplosionPosition, ExplosionType);
+		}
+	}
 }
 
-// void ABomb::SpawnExplosion(FVector Position, EExplosionType Type)
-// {
-// }
+void ABomb::SpawnExplosion(FVector Position, EExplosionType Type)
+{
+	FActorSpawnParameters SpawnParams;
+	SpawnParams.Owner						   = BombOwner;
+	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+
+	AExplosion* NewExplosion = GetWorld()->SpawnActor<AExplosion>(ExplosionClass, Position, FRotator::ZeroRotator, SpawnParams);
+	if (NewExplosion)
+	{
+		NewExplosion->InitializeExplosion(Type, BombOwner, this);
+	}
+}
 
 bool ABomb::CanBeKicked() const
 {
-	return false;
+	return bCanBeKicked && !bIsExploding && !bIsBeingKicked;
 }
 
 void ABomb::StartKick(FVector Direction, ABombermanCharacter* Kicker)
 {
+	if (!CanBeKicked()) return;
+
+	bIsBeingKicked	 = true;
+	_KickDirection	 = Direction.GetSafeNormal2D();
+	CurrentKickSpeed = KickSpeed;
+
+	// Collision settings
+	CollisionBox->SetCollisionResponseToChannel(ECC_Pawn, ECR_Block);
+
+	OnKickStarted(_KickDirection);
+
+	UE_LOG(LogTemp, Log, TEXT("Bomb kicked by %s in direction: %s"), Kicker ? *Kicker->GetName() : TEXT("Unknown"), *_KickDirection.ToString());
 }
 
 void ABomb::UpdateKickMovement(float DeltaTime)
 {
+	if (!bIsBeingKicked) return;
+
+	// Deceleration
+	CurrentKickSpeed = FMath::Max(0.f, CurrentKickSpeed - (KickDeceleration * DeltaTime));
+
+	if (CurrentKickSpeed <= 0.f)
+	{
+		StopKick();
+		return;
+	}
+
+	// Movement process
+	FVector NewLocation = GetActorLocation() + (_KickDirection * CurrentKickSpeed * DeltaTime);
+	// Adjust to the grid
+	FVector GridPosition = GetGridPosition(NewLocation);
+	// Collision check
+	FCollisionQueryParams QueryParams;
+	QueryParams.AddIgnoredActor(this);
+	QueryParams.AddIgnoredActor(BombOwner);
+
+	FHitResult HitResult;
+	bool bHit = GetWorld()->SweepSingleByChannel(HitResult, GetActorLocation(), GridPosition, FQuat::Identity, ECC_WorldStatic, FCollisionShape::MakeBox(FVector(40.f, 40.f, 40.f)), QueryParams);
+	if (bHit)
+	{
+		// Collision handling
+		OnKickCollision();
+		StopKick();
+	}
+	else
+	{
+		SetActorLocation(GridPosition);
+	}
 }
 
 void ABomb::StopKick()
 {
+	if (!bIsBeingKicked) return;
+
+	bIsBeingKicked	 = false;
+	CurrentKickSpeed = 0.f;
+
+	// Align the position with the grid
+	FVector GridPosition = GetGridPosition(GetActorLocation());
+	SetActorLocation(GridPosition);
+
+	OnKickStopped();
+
+	UE_LOG(LogTemp, Log, TEXT("Bomb kick stopped at: %s"), *GetActorLocation().ToString());
 }
 
 void ABomb::OnKickCollision()
 {
+	// Special handling in case of collision (if necessary)
+	UE_LOG(LogTemp, Log, TEXT("Bomb kick collision detected"));
 }
 
 void ABomb::EnableOwnerCollision()
 {
+	if (BombOwner)
+	{
+		auto Channel = BombOwner->GetPlayerCollisionChannel();
+		CollisionBox->SetCollisionResponseToChannel(Channel, ECR_Block);
+	}
+}
+void ABomb::DisableOwnerCollision()
+{
+	if (BombOwner)
+	{
+		auto Channel = BombOwner->GetPlayerCollisionChannel();
+		CollisionBox->SetCollisionResponseToChannel(Channel, ECR_Ignore);
+	}
 }
 
 void ABomb::UpdateTimerEffects(float DeltaTIme)
@@ -169,4 +318,26 @@ void ABomb::UpdateTimerEffects(float DeltaTIme)
 
 	const FVector NewScale = InitialScale * CurrentScale;
 	BombMesh->SetWorldScale3D(NewScale);
+}
+
+FVector ABomb::GetGridPosition(FVector WorldPosition) const
+{
+	float X = FMath::RoundToFloat(WorldPosition.X / GridSize) * GridSize;
+	float Y = FMath::RoundToFloat(WorldPosition.Y / GridSize) * GridSize;
+	float Z = WorldPosition.Z;
+
+	return FVector(X, Y, Z);
+}
+
+void ABomb::UpdateOwnerCanPass()
+{
+	if (BombOwner)
+	{
+		if (FVector::Dist2D(BombOwner->GetActorLocation(), GetActorLocation()) > GridSize)
+		{
+			bOwnerCanPass = false;
+			EnableOwnerCollision();
+			UE_LOG(LogTemp, Log, TEXT("EnableOwnerCollision : %s"), *GetName());
+		}
+	}
 }

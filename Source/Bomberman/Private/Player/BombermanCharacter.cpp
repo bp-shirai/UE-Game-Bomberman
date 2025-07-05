@@ -10,9 +10,14 @@
 #include "EnhancedInputSubsystems.h"
 #include "Perception/AIPerceptionStimuliSourceComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "GameFramework/PlayerState.h"
+#include "GameFramework/PlayerController.h"
 
+#include "Player/BombermanController.h"
+#include "Player/BombermanState.h"
 #include "Core/BombermanGameMode.h"
 #include "Core/GameplayLibrary.h"
+#include "Core/BombermanTypes.h"
 #include "World/Bomb.h"
 #include "World/Explosion.h"
 #include "World/Powerup.h"
@@ -55,6 +60,13 @@ void ABombermanCharacter::BeginPlay()
 		PC->bShowMouseCursor = false;
 		PC->SetInputMode(FInputModeGameOnly());
 	}
+
+	// Set player-specific collision channels
+	GetCapsuleComponent()->SetCollisionObjectType(GetPlayerCollisionChannel());
+
+	const auto* PC = GetController<ABombermanController>();
+	const auto* PS = GetPlayerState<ABombermanState>();
+	UE_LOG(LogTemp, Warning, TEXT("BeginPlay : %s, PlayerID: %d"), *PC->GetName(), PS->GetPlayerID());
 }
 
 void ABombermanCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -144,20 +156,17 @@ void ABombermanCharacter::PlaceBomb()
 
 	// Spawn a bomb
 	FActorSpawnParameters SpawnParams;
-	SpawnParams.Owner						   = this;
-	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+	SpawnParams.Owner = this;
+	// SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
 	auto BombCDO = BombClass ? BombClass->GetDefaultObject<ABomb>() : nullptr;
 	auto OffsetZ = UGameplayLibrary::GetActorHalfHeightFromRootPrimitive(BombCDO);
-	// GridPosition.Z += OffsetZ;
-	FHitResult GroundHit;
-	const static FName TraceTag("GroundHit");
-	const FCollisionQueryParams Params(TraceTag, false, this);
-	GetWorld()->LineTraceSingleByChannel(GroundHit, GridPosition, GridPosition + (FVector::UpVector * -100.f), ECC_WorldStatic, Params);
 
-    GroundHit.ImpactPoint.Z += OffsetZ;
-	const FVector SpawnPosition = GroundHit.ImpactPoint;
-
+	FVector SpawnPosition = GridPosition;
+	// Z matches the character's feet
+	float CharacterFeet = GetActorLocation().Z - GetCapsuleComponent()->GetScaledCapsuleHalfHeight();
+	SpawnPosition.Z		= CharacterFeet + OffsetZ;
 
 	ABomb* NewBomb = GetWorld()->SpawnActor<ABomb>(BombClass, SpawnPosition, FRotator::ZeroRotator, SpawnParams);
 
@@ -165,7 +174,8 @@ void ABombermanCharacter::PlaceBomb()
 	{
 		// Bomb settings
 		NewBomb->SetBombPower(BombPower);
-		NewBomb->SetOwner(this);
+		NewBomb->SetBombOwner(this);
+		NewBomb->DisableOwnerCollision();
 
 		// Add bombs to management list
 		PlacedBombs.Add(NewBomb);
@@ -181,6 +191,32 @@ void ABombermanCharacter::PlaceBomb()
 
 		UE_LOG(LogTemp, Log, TEXT("Bomb placed at: %s, Current Count: %d"), *GridPosition.ToString(), CurrentBombCount);
 	}
+
+	APlayerState* PS = GetPlayerState();
+	PS->GetPlayerId();
+}
+
+ECollisionChannel ABombermanCharacter::GetPlayerCollisionChannel() const
+{
+	if (const auto* PS = GetPlayerState<ABombermanState>())
+	{
+		const int32 PlayerID = PS->GetPlayerID();
+		switch (PlayerID)
+		{
+			case 0: return ECC_Player_1;
+			case 1: return ECC_Player_2;
+			case 2: return ECC_Player_3;
+			case 3: return ECC_Player_4;
+		}
+	}
+	return ECC_Pawn;
+}
+
+void ABombermanCharacter::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+
+
 }
 
 FVector ABombermanCharacter::GetGridPosition(FVector WorldPosition) const

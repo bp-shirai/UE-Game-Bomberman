@@ -13,9 +13,9 @@ class ABomb;
 UENUM(BlueprintType)
 enum class EExplosionType : uint8
 {
-    Center,     // 爆弾中心
-    Middle,     // 爆発の途中
-    End         // 爆発の先端
+    Center,     // The center of the explosion
+    Middle,     // On the way to the explosion
+    End         // The tip of the explosion
 };
 
 

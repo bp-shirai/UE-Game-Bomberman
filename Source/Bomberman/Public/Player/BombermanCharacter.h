@@ -35,28 +35,16 @@ public:
 
 	// Get Status
 	UFUNCTION(BlueprintPure, Category = "Bomberman|Stats")
-	int32 GetBombCount() const
-	{
-		return CurrentBombCount;
-	}
+	int32 GetBombCount() const { return CurrentBombCount; }
 
 	UFUNCTION(BlueprintPure, Category = "Bomberman|Stats")
-	int32 GetBombPower() const
-	{
-		return BombPower;
-	}
+	int32 GetBombPower() const { return BombPower; }
 
 	UFUNCTION(BlueprintPure, Category = "Bomberman|Stats")
-	float GetMoveSpeed() const
-	{
-		return BaseMoveSpeed;
-	}
+	float GetMoveSpeed() const { return BaseMoveSpeed; }
 
 	UFUNCTION(BlueprintPure, Category = "Bomberman|Stats")
-	bool CanKickBombs() const
-	{
-		return bCanKickBombs;
-	}
+	bool CanKickBombs() const { return bCanKickBombs; }
 
 	// Damage and death handling
 	UFUNCTION(BlueprintCallable, Category = "Bomberman|Health")
@@ -73,6 +61,7 @@ protected:
 	// virtual void Tick(float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
+	virtual void PossessedBy(AController* NewController) override;
 
 	// ===== Basic Status =====
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Bomberman|Stats")
@@ -178,8 +167,11 @@ private:
 	void EndInvincibility();
 
 	// ===== Bomb Management =====
-    UFUNCTION()
+	UFUNCTION()
 	void OnBombExploded(ABomb* ExplodedBomb);
-    
+
 	void CleanupBombReferences();
+
+public:
+	ECollisionChannel GetPlayerCollisionChannel() const;
 };

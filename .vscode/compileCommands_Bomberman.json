@@ -48,6 +48,22 @@
 		"directory": "C:\\Program Files\\Epic Games\\UE_5.6\\Engine\\Source"
 	},
 	{
+		"file": "D:\\UnrealProjects\\Game_Bomberman\\Source\\Bomberman\\Private\\Player\\BombermanController.cpp",
+		"arguments": [
+			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.38.33130\\bin\\Hostx64\\x64\\cl.exe",
+			"@D:\\UnrealProjects\\Game_Bomberman\\.vscode\\compileCommands_Bomberman\\Bomberman.1.rsp"
+		],
+		"directory": "C:\\Program Files\\Epic Games\\UE_5.6\\Engine\\Source"
+	},
+	{
+		"file": "D:\\UnrealProjects\\Game_Bomberman\\Source\\Bomberman\\Private\\Player\\BombermanState.cpp",
+		"arguments": [
+			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.38.33130\\bin\\Hostx64\\x64\\cl.exe",
+			"@D:\\UnrealProjects\\Game_Bomberman\\.vscode\\compileCommands_Bomberman\\Bomberman.1.rsp"
+		],
+		"directory": "C:\\Program Files\\Epic Games\\UE_5.6\\Engine\\Source"
+	},
+	{
 		"file": "D:\\UnrealProjects\\Game_Bomberman\\Source\\Bomberman\\Private\\Player\\FollowCamera.cpp",
 		"arguments": [
 			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.38.33130\\bin\\Hostx64\\x64\\cl.exe",
@@ -57,6 +73,14 @@
 	},
 	{
 		"file": "D:\\UnrealProjects\\Game_Bomberman\\Source\\Bomberman\\Private\\World\\Bomb.cpp",
+		"arguments": [
+			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.38.33130\\bin\\Hostx64\\x64\\cl.exe",
+			"@D:\\UnrealProjects\\Game_Bomberman\\.vscode\\compileCommands_Bomberman\\Bomberman.1.rsp"
+		],
+		"directory": "C:\\Program Files\\Epic Games\\UE_5.6\\Engine\\Source"
+	},
+	{
+		"file": "D:\\UnrealProjects\\Game_Bomberman\\Source\\Bomberman\\Private\\World\\DestructibleBlock.cpp",
 		"arguments": [
 			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.38.33130\\bin\\Hostx64\\x64\\cl.exe",
 			"@D:\\UnrealProjects\\Game_Bomberman\\.vscode\\compileCommands_Bomberman\\Bomberman.1.rsp"
@@ -96,6 +120,14 @@
 		"directory": "C:\\Program Files\\Epic Games\\UE_5.6\\Engine\\Source"
 	},
 	{
+		"file": "D:\\UnrealProjects\\Game_Bomberman\\Source\\Bomberman\\Public\\Core\\BombermanTypes.h",
+		"arguments": [
+			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.38.33130\\bin\\Hostx64\\x64\\cl.exe",
+			"@D:\\UnrealProjects\\Game_Bomberman\\.vscode\\compileCommands_Bomberman\\Bomberman.1.rsp"
+		],
+		"directory": "C:\\Program Files\\Epic Games\\UE_5.6\\Engine\\Source"
+	},
+	{
 		"file": "D:\\UnrealProjects\\Game_Bomberman\\Source\\Bomberman\\Public\\Core\\GameplayInterface.h",
 		"arguments": [
 			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.38.33130\\bin\\Hostx64\\x64\\cl.exe",
@@ -120,6 +152,22 @@
 		"directory": "C:\\Program Files\\Epic Games\\UE_5.6\\Engine\\Source"
 	},
 	{
+		"file": "D:\\UnrealProjects\\Game_Bomberman\\Source\\Bomberman\\Public\\Player\\BombermanController.h",
+		"arguments": [
+			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.38.33130\\bin\\Hostx64\\x64\\cl.exe",
+			"@D:\\UnrealProjects\\Game_Bomberman\\.vscode\\compileCommands_Bomberman\\Bomberman.1.rsp"
+		],
+		"directory": "C:\\Program Files\\Epic Games\\UE_5.6\\Engine\\Source"
+	},
+	{
+		"file": "D:\\UnrealProjects\\Game_Bomberman\\Source\\Bomberman\\Public\\Player\\BombermanState.h",
+		"arguments": [
+			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.38.33130\\bin\\Hostx64\\x64\\cl.exe",
+			"@D:\\UnrealProjects\\Game_Bomberman\\.vscode\\compileCommands_Bomberman\\Bomberman.1.rsp"
+		],
+		"directory": "C:\\Program Files\\Epic Games\\UE_5.6\\Engine\\Source"
+	},
+	{
 		"file": "D:\\UnrealProjects\\Game_Bomberman\\Source\\Bomberman\\Public\\Player\\FollowCamera.h",
 		"arguments": [
 			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.38.33130\\bin\\Hostx64\\x64\\cl.exe",
@@ -129,6 +177,14 @@
 	},
 	{
 		"file": "D:\\UnrealProjects\\Game_Bomberman\\Source\\Bomberman\\Public\\World\\Bomb.h",
+		"arguments": [
+			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.38.33130\\bin\\Hostx64\\x64\\cl.exe",
+			"@D:\\UnrealProjects\\Game_Bomberman\\.vscode\\compileCommands_Bomberman\\Bomberman.1.rsp"
+		],
+		"directory": "C:\\Program Files\\Epic Games\\UE_5.6\\Engine\\Source"
+	},
+	{
+		"file": "D:\\UnrealProjects\\Game_Bomberman\\Source\\Bomberman\\Public\\World\\DestructibleBlock.h",
 		"arguments": [
 			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.38.33130\\bin\\Hostx64\\x64\\cl.exe",
 			"@D:\\UnrealProjects\\Game_Bomberman\\.vscode\\compileCommands_Bomberman\\Bomberman.1.rsp"
