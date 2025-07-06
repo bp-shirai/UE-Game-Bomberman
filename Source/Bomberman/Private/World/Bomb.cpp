@@ -100,7 +100,7 @@ void ABomb::Explode()
 
 	bIsExploding = true;
 
-	UE_LOG(LogTemp, Warning, TEXT("Bomb exploding at: %s with power: %d"), *GetActorLocation().ToString(), ExplosionRange);
+	UE_LOG(LogTemp, Log, TEXT("Bomb exploding at: %s with power: %d"), *GetActorLocation().ToString(), ExplosionRange);
 
 	// Blueprint event call
 	OnBombExploding();

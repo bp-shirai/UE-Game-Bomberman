@@ -66,7 +66,7 @@ void ABombermanCharacter::BeginPlay()
 
 	const auto* PC = GetController<ABombermanController>();
 	const auto* PS = GetPlayerState<ABombermanState>();
-	UE_LOG(LogTemp, Warning, TEXT("BeginPlay : %s, PlayerID: %d"), *PC->GetName(), PS->GetPlayerID());
+	UE_LOG(LogTemp, Log, TEXT("BeginPlay : %s, PlayerID: %d"), *PC->GetName(), PS->GetPlayerID());
 }
 
 void ABombermanCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -189,7 +189,7 @@ void ABombermanCharacter::PlaceBomb()
 		// Blueprint event call
 		OnBombPlaced(NewBomb);
 
-		UE_LOG(LogTemp, Log, TEXT("Bomb placed at: %s, Current Count: %d"), *GridPosition.ToString(), CurrentBombCount);
+		UE_LOG(LogTemp, Log, TEXT("Bomb placed at: %s, Current Count: %d / %d"), *GridPosition.ToString(), CurrentBombCount, MaxBombCount);
 	}
 
 	APlayerState* PS = GetPlayerState();
@@ -386,8 +386,7 @@ void ABombermanCharacter::TakeBombDamage(float DamageAmount, AActor* DamageSourc
 	if (bIsDead || bIsInvincible)
 		return;
 
-	UE_LOG(LogTemp, Warning, TEXT("Player %s took damage from %s"),
-		   *GetName(), DamageSource ? *DamageSource->GetName() : TEXT("Unknown"));
+	UE_LOG(LogTemp, Warning, TEXT("Player %s took damage from %s"), *GetName(), DamageSource ? *DamageSource->GetName() : TEXT("Unknown"));
 
 	// Blueprint Event call
 	OnDamageReceived(DamageAmount, DamageSource);

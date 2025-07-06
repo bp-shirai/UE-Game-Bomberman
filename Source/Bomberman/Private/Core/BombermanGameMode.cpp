@@ -31,5 +31,5 @@ void ABombermanGameMode::PostLogin(APlayerController* NewPlayer)
 		NewPS->SetPlayerID(NextPlayerID++); // Increment the id for the next player
 	}
 
-    UE_LOG(LogTemp, Warning, TEXT("PostLogin at: %s, NewPlayerID: %d"), *NewPlayer->GetName(), NextPlayerID-1);
+    UE_LOG(LogTemp, Log, TEXT("PostLogin at: %s, NewPlayerID: %d"), *NewPlayer->GetName(), NextPlayerID-1);
 }

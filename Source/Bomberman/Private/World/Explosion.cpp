@@ -38,7 +38,7 @@ void AExplosion::BeginPlay()
 	// Survival timer
 	GetWorldTimerManager().SetTimer(LifeTimerHandle, this, &ThisClass::DestroyExplosion, LifeTime, false);
 
-	UE_LOG(LogTemp, Warning, TEXT("Explosion created at: %s"), *GetActorLocation().ToString());
+	UE_LOG(LogTemp, Log, TEXT("Explosion created at: %s"), *GetActorLocation().ToString());
 }
 
 void AExplosion::InitializeExplosion(EExplosionType Type, ABombermanCharacter* InOwner, ABomb* Source)
@@ -141,7 +141,7 @@ void AExplosion::TriggerChainExplosion(ABomb* NearbyBomb)
 	OnBombChainExploded(NearbyBomb);
 	NearbyBomb->ForceExplode();
 
-	UE_LOG(LogTemp, Warning, TEXT("Chain explosion triggered on bomb at: %s"), *NearbyBomb->GetActorLocation().ToString());
+	UE_LOG(LogTemp, Log, TEXT("Chain explosion triggered on bomb at: %s"), *NearbyBomb->GetActorLocation().ToString());
 }
 
 void AExplosion::DestroyExplosion()
